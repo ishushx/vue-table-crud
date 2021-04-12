@@ -32,6 +32,17 @@
         </template>
       </el-table-column>
     </el-table>
+    <!-- 分页 -->
+    <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="pagenum"
+      :page-sizes="[5, 10, 20, 100]"
+      :page-size="10"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="pagetotal"
+    >
+    </el-pagination>
 
     <!--查看用户信息 dialog -->
     <el-dialog title="用户信息" :visible.sync="viewDialogVisible" width="width">
@@ -122,6 +133,14 @@ export default {
     }, 2000);
   },
   methods: {
+    handleSizeChange(val) {
+      this.pagesize = val;
+      this.getUserList();
+    },
+    handleCurrentChange(val) {
+      this.pagenum = val;
+      this.getUserList();
+    },
     async getUserList() {
       let {
         data: { data: res },
