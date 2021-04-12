@@ -1,7 +1,12 @@
 <template>
   <div>
-    <el-button type="primary" @click="handAdd()"> 新增</el-button>
-    <el-table :data="userList" border stripe="" style="width: 70%">
+    <span>用户列表</span>
+    <div>
+      <el-button type="primary" @click="handAdd()" class="addUser">
+        新增</el-button
+      >
+    </div>
+    <el-table :data="userList" border stripe="">
       <el-table-column prop="username" label="姓名" width="180">
       </el-table-column>
       <el-table-column prop="email" label="邮箱" width="180"> </el-table-column>
@@ -213,4 +218,12 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.addUser {
+  float: left;
+  margin: 10px;
+}
+.el-table {
+  margin: 10px;
+}
+</style>
