@@ -4,18 +4,27 @@ import qs from 'qs'
 
 const user = {    
     // 用户列表    
-    userList () {        
-        return axios.get(`${base.sq}/topics`);    
+    userList (params) {        
+        return axios.get(`${base.sq}/users`, {
+            params: params
+        });    
     },    
     // 用户详情,演示    
-    userDetail (id, params) {        
-        return axios.get(`${base.sq}/topic/${id}`, {            
-            params: params        
-        });    
+    userDetail (id) {        
+        return axios.get(`${base.sq}/users/${id}`);    
+    },
+    updateUserDetail (id,params) {        
+        return axios.put(`${base.sq}/users/${id}`,(params));    
+    },
+    addUser(params) {
+        return axios.post(`${base.sq}/users`,(params));    
     },
     // post提交    
     login (params) {        
         return axios.post(`${base.sq}/login`,(params));    
+    },
+    deleteUser(id) {
+        return axios.delete(`${base.sq}/users/${id}`);
     }
    
 }

@@ -71,7 +71,7 @@ instance.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8
  */ 
 instance.interceptors.request.use(    
     config => {               
-        const token = store.state.token;        
+		const token = store.state.token;
         token && (config.headers.Authorization = token);        
         return config;    
     },    
