@@ -50,70 +50,44 @@
     </el-pagination>
 
     <!--查看用户信息 dialog -->
-    <el-dialog title="用户信息" :visible.sync="viewDialogVisible" width="width">
-      <el-form :model="userinfo">
-        <el-form-item label="用户名">
-          <el-input v-model="userinfo.username" readonly></el-input>
-        </el-form-item>
-        <el-form-item label="邮箱">
-          <el-input v-model="userinfo.email" readonly> </el-input>
-        </el-form-item>
-        <el-form-item label="电话">
-          <el-input v-model="userinfo.mobile" readonly></el-input>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
+    <user-dialog
+      dialogTitle="查看用户信息"
+      type="view"
+      :userdata="userinfo"
+      ref="viewUserDialog"
+      @close="handClose()"
+    ></user-dialog>
 
-    <!--编辑用户信息 dialog -->
-    <el-dialog
-      title="编辑用户信息"
-      :visible.sync="editDialogVisible"
-      width="width"
-    >
-      <el-form :model="userinfo">
-        <el-form-item label="用户名">
-          <el-input v-model="userinfo.username" disabled></el-input>
-        </el-form-item>
-        <el-form-item label="邮箱">
-          <el-input v-model="userinfo.email"> </el-input>
-        </el-form-item>
-        <el-form-item label="电话">
-          <el-input v-model="userinfo.mobile"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="updateUserDetail()">确 定</el-button>
-      </div>
-    </el-dialog>
+    <!--编辑用户信息 dialog userinfo -->
+    <user-dialog
+      dialogTitle="编辑用户信息"
+      type="edit"
+      :userdata="userinfo"
+      ref="editUserDialog"
+      @confirm="updateUserDetail()"
+      @close="handClose()"
+    ></user-dialog>
 
     <!--添加用户 dialog -->
-    <el-dialog title="新增用户" :visible.sync="addDialogVisible" width="width">
-      <el-form :model="newUser">
-        <el-form-item label="用户名">
-          <el-input v-model="newUser.username"></el-input>
-        </el-form-item>
-        <el-form-item label="密码">
-          <el-input v-model="newUser.password" type="password"></el-input>
-        </el-form-item>
-        <el-form-item label="邮箱">
-          <el-input v-model="newUser.email"> </el-input>
-        </el-form-item>
-        <el-form-item label="电话">
-          <el-input v-model="newUser.mobile"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addUser()">确 定</el-button>
-      </div>
-    </el-dialog>
+    <user-dialog
+      dialogTitle="添加用户"
+      type="add"
+      :userdata.sync="newUser"
+      ref="addUserDialog"
+      @confirm="addUser()"
+      @close="handClose()"
+    ></user-dialog>
   </div>
 </template>
 
 <script>
+import UserDialog from "./Dialog/userDIalog";
+
 export default {
   name: "UserTable",
+  components: {
+    UserDialog,
+  },
   data() {
     return {
       userList: [],
@@ -168,11 +142,11 @@ export default {
 
     handleView(row) {
       this.getUserInfo(row);
-      this.viewDialogVisible = true;
+      this.$refs.viewUserDialog.DialogVisible = true;
     },
-    handleEdit(row) {
-      this.getUserInfo(row);
-      this.editDialogVisible = true;
+    async handleEdit(row) {
+      await this.getUserInfo(row);
+      this.$refs.editUserDialog.DialogVisible = true;
     },
     async handleDelete(id) {
       this.$confirm("此操作将永久删除该用户, 是否继续?", "提示", {
@@ -196,12 +170,16 @@ export default {
         });
     },
     handAdd() {
-      this.addDialogVisible = true;
+      this.$refs.addUserDialog.DialogVisible = true;
     },
     async addUser() {
       let res = await this.$api.user.addUser(this.newUser);
+      this.$message({
+        message: "新增用户成功",
+        type: "success",
+      });
       this.getUserList();
-      this.addDialogVisible = false;
+      this.$refs.addUserDialog.DialogVisible = false;
     },
     async updateUserDetail() {
       let {
@@ -210,9 +188,16 @@ export default {
         email: this.userinfo.email,
         mobile: this.userinfo.mobile,
       });
-
+      this.$message({
+        message: "更新用户成功",
+        type: "success",
+      });
       this.editDialogVisible = false;
       this.getUserList();
+    },
+    handClose() {
+      this.newUser = {};
+      this.userinfo = {};
     },
   },
 };
