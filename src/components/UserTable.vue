@@ -1,17 +1,18 @@
 <template>
-  <div>
-    <span>用户列表</span>
-    <div>
-      <el-button type="primary" @click="handAdd()" class="addUser">
-        新增</el-button
-      >
-    </div>
+  <div class="table">
+    <el-button type="primary" @click="handAdd()" class="addUser">
+      新增</el-button
+    >
     <el-table :data="userList" border stripe="">
-      <el-table-column prop="username" label="姓名" width="180">
+      <el-table-column type="index" label="序号" width="100" align="center">
       </el-table-column>
-      <el-table-column prop="email" label="邮箱" width="180"> </el-table-column>
-      <el-table-column prop="mobile" label="电话"> </el-table-column>
-      <el-table-column prop="role_name" label="角色"> </el-table-column>
+      <el-table-column sortable prop="username" label="姓名" width="180">
+      </el-table-column>
+      <el-table-column sortable prop="email" label="邮箱" width="180">
+      </el-table-column>
+      <el-table-column sortable prop="mobile" label="电话"> </el-table-column>
+      <el-table-column sortable prop="role_name" label="角色">
+      </el-table-column>
       <el-table-column label="状态">
         <template slot-scope="scope">
           <el-switch
@@ -93,7 +94,7 @@ export default {
       userList: [],
       query: "",
       pagenum: 1,
-      pagesize: 5,
+      pagesize: 10,
       pagetotal: 0,
       addDialogVisible: false,
       editDialogVisible: false,
@@ -101,9 +102,6 @@ export default {
       userinfo: {},
       newUser: {},
     };
-  },
-  created() {
-    this.$store.dispatch("login");
   },
   mounted() {
     let that = this;
@@ -121,16 +119,17 @@ export default {
       this.getUserList();
     },
     async getUserList() {
-      let {
-        data: { data: res },
-      } = await this.$api.user.userList({
+      let { data } = await this.$api.user.userList({
         query: this.query,
         pagenum: this.pagenum,
         pagesize: this.pagesize,
       });
-      console.log(res);
-      this.userList = res.users;
-      this.pagetotal = res.total;
+      console.log(data);
+      if (data.data == null) {
+        this.$router.push("/login");
+      }
+      this.userList = data.data.users;
+      this.pagetotal = data.data.total;
     },
     async getUserInfo(row) {
       let {
@@ -205,10 +204,17 @@ export default {
 
 <style>
 .addUser {
-  float: left;
   margin: 10px;
 }
+.table {
+  margin-top: 10px;
+}
 .el-table {
-  margin: 10px;
+  margin-top: 10px;
+}
+.el-pagination {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
 }
 </style>

@@ -7,33 +7,33 @@ import router from '../router';
 import store from '../store/index';
 import { Message  } from 'element-ui';
 
-/** 
- * 提示函数 
+/**
+ * 提示函数
  * 禁止点击蒙层、显示一秒后关闭
  */
-const tip = msg => {    
-    Message({        
-        message: msg,        
-        duration: 1000,        
-        forbidClick: true    
+const tip = msg => {
+    Message({
+        message: msg,
+        duration: 1000,
+        forbidClick: true
     });
 }
 
-/** 
+/**
  * 跳转登录页
  * 携带当前页面路由，以期在登录页面完成登录后返回当前页面
  */
 const toLogin = () => {
     router.replace({
-        path: '/login',        
+        path: '/login',
         query: {
             redirect: router.currentRoute.fullPath
         }
     });
 }
 
-/** 
- * 请求失败后的错误统一处理 
+/**
+ * 请求失败后的错误统一处理
  * @param {Number} status 请求失败的状态码
  */
 const errorHandle = (status, other) => {
@@ -55,37 +55,38 @@ const errorHandle = (status, other) => {
             break;
         // 404请求不存在
         case 404:
-            tip('请求的资源不存在'); 
+            tip('请求的资源不存在');
             break;
         default:
-            console.log(other);   
+            console.log(other);
         }}
 
 // 创建axios实例
 var instance = axios.create({timeout: 1000 * 12});
 // 设置post请求头
 instance.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8';
-/** 
- * 请求拦截器 
- * 每次请求前，如果存在token则在请求头中携带token 
- */ 
-instance.interceptors.request.use(    
-    config => {               
-		const token = store.state.token;
-        token && (config.headers.Authorization = token);        
-        return config;    
-    },    
+/**
+ * 请求拦截器
+ * 每次请求前，如果存在token则在请求头中携带token
+ */
+instance.interceptors.request.use(
+    config => {
+        const token = store.state.token;
+        token && (config.headers.Authorization = token);
+        return config;
+    },
     error => Promise.error(error))
 
 // 响应拦截器
-instance.interceptors.response.use(    
+instance.interceptors.response.use(
     // 请求成功
-    res => res.status === 200 ? Promise.resolve(res) : Promise.reject(res),    
+    res => res.status === 200 ? Promise.resolve(res) : Promise.reject(res),
+
     // 请求失败
     error => {
         const { response } = error;
         if (response) {
-            // 请求已发出，但是不在2xx的范围 
+            // 请求已发出，但是不在2xx的范围
             errorHandle(response.status, response.data.message);
             return Promise.reject(response);
         } else {

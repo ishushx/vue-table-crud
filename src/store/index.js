@@ -14,15 +14,21 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    async login(ctx) {
-      let {data:res} =await api.user.login({
-        username: "admin",
-        password: "123456",
-      });
-      if (res.meta.status == 200) {
-        ctx.commit('setToken',res.data.token)
-      }
-    },
+    login(ctx, params) {
+       return new Promise((resolve, reject) => {
+         api.user.login(params).then(res => {
+          console.log(res.data)
+          if (res.data.meta.status == 200) {
+            ctx.commit('setToken', res.data.data.token)
+            resolve(res.data.meta)
+          } else {
+            resolve(res.data.meta)
+          }
+        }).catch(error => {
+        reject(error)
+        })
+      })
+    }
   },
   modules: {
   }

@@ -57,6 +57,7 @@ export default {
       console.log(this.userdata);
       this.$emit("update:userdata", this.userdata);
       this.$emit("confirm", this.userdata);
+      this.DialogVisible = false;
     },
     closeDialog() {
       this.$emit("close");
